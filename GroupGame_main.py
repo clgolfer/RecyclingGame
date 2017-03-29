@@ -20,6 +20,9 @@ xRate = 0
 yRate = 0
 radius = 20
 score = 0
+mainTrashTrig = 0
+leftTrashTrig = 0
+rightTrashTrig = 0
 
 mainPath = ((250,0),(250,200))
 RightSide = ((250,200),(350,300))
@@ -28,6 +31,9 @@ RedPath = (150,300),(100,350),(100,500)
 PurplePath = (150,300),(200,350),(200,500)
 GreenPath = (350,300),(300,350),(300,500)
 BluePath = (350,300),(400,350),(400,500)
+MainTrash = ((250,200),(500,200))
+LeftTrash = ((350,300),(500,300))
+RightTrash = ((150,300),(0,300))
 
 #The Required Set up for the loop
 size = [500, 500]
@@ -38,16 +44,13 @@ clock = pygame.time.Clock()
 
 def texts(score):
     font = pygame.font.Font(None, 36)
-    scoreText = font.render("Score: " + str(score),1, (0, 0, 0))
+    scoreText = font.render("W, A, D for trash                      Score: " + str(score),1, (0, 0, 0))
     screen.blit(scoreText, (10,10))
-
-def bounds(x,y):
-    print("Fail")
 
 #Loops till quit is called
 #This is where you put code
 while not done:
-    if(yLocation > 470):
+    if(yLocation > 470 or xLocation > 470 or xLocation < 30):
         if(xLocation > 60 and xLocation < 140 and color == RED):
             score = score + 10
         elif(xLocation > 160 and xLocation < 240 and color == PURPLE):
@@ -82,8 +85,21 @@ while not done:
             if (xLocation + radius > alpha and xLocation - radius < alpha):
                 if(yLocation + radius > omega and yLocation - radius < omega):
                     trigger = 1
-        elif event.type == pygame.MOUSEBUTTONUP:
-            trigger = 0
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w:
+                mainTrashTrig = 1
+            elif event.key == pygame.K_a:
+                leftTrashTrig = 1
+            elif event.key == pygame.K_d:
+                rightTrashTrig = 1
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_w:
+                mainTrashTrig = 0
+            elif event.key == pygame.K_a:
+                leftTrashTrig = 0
+            elif event.key == pygame.K_d:
+                rightTrashTrig = 0
+        #elif event.type == pygame.key.
     #Circles to represent the targets
     pygame.draw.rect(screen, RED, [50, 465, 90, 50], 0)
     pygame.draw.ellipse(screen, BLACK, [50, 450, 90, 30], 0)
@@ -101,9 +117,6 @@ while not done:
     pygame.draw.ellipse(screen, BLACK, [350, 450, 90, 30], 0)
     pygame.draw.ellipse(screen, BLUE, [350, 450, 90, 30], 2)
 
-    #Example Code for creating a path.  The big grouping of numbers is a set of points and its draws a polygon through that point by point
-    #pygame.draw.polygon(screen, (110, 110, 110),((200, 0), (150, 0), (150,200), (200,300), (275, 400), (300,500) ,(350,500) ,(325, 400) ,(250,300) , (200,200)))
-
     pygame.draw.lines(screen, BLACK,0,mainPath,1)
     pygame.draw.lines(screen, BLACK,0,RightSide,1)
     pygame.draw.lines(screen, BLACK,0,LeftSide,1)
@@ -111,6 +124,9 @@ while not done:
     pygame.draw.lines(screen, BLACK,0,PurplePath,1)
     pygame.draw.lines(screen, BLACK,0,GreenPath,1)
     pygame.draw.lines(screen, BLACK,0,BluePath,1)
+    pygame.draw.lines(screen, BLACK,0,MainTrash,1)
+    pygame.draw.lines(screen, BLACK,0,RightTrash,1)
+    pygame.draw.lines(screen, BLACK,0,LeftTrash,1)
 
     if (trigger == 1):
         (xLocation, yLocation) = pygame.mouse.get_pos()
@@ -122,42 +138,56 @@ while not done:
     #Signal to update the screen
     #All Drawing must be done prior to this command
     pygame.display.flip()
-    if yLocation == 200:
-        if cmp(color,RED) == 1| cmp(color,PURPLE)==1:
-            print "RED/Prupl"
+
+    if yLocation == 200 and xTarget != 500:
+        if mainTrashTrig == 1:
+            xTarget,yTarget = MainTrash[1]
+        elif color[0] == RED[0] and color[1] == RED[1] and color[2] == RED[2]:
             xTarget,yTarget = LeftSide[1]
+        elif color[0] == PURPLE[0] and color[1] == PURPLE[1] and color[2] == PURPLE[2]:
+            xTarget,yTarget = LeftSide[1]
+        elif color[0] == GREEN[0] and color[1] == GREEN[1] and color[2] == GREEN[2]:
+            xTarget,yTarget = RightSide[1]
         else:
             xTarget,yTarget = RightSide[1]
-        xRate = abs(xTarget-xLocation)/50
-        yRate = abs(yTarget-yLocation)/50
-    if yLocation == 300:
-        if cmp(color,RED) == 1:
+        xRate = (xTarget-xLocation)/50
+        yRate = (yTarget-yLocation)/50
+    if yLocation == 300 and xTarget != 500 and xTarget != 0:
+        if leftTrashTrig == 1 and xLocation == 150:
+            xTarget,yTarget = RightTrash[1]
+        elif rightTrashTrig == 1 and xLocation == 350:
+            xTarget,yTarget = LeftTrash[1]
+        elif color[0] == RED[0] and color[1] == RED[1] and color[2] == RED[2]:
             xTarget,yTarget = RedPath[1]
-        elif cmp(color,PURPLE) == 1:
+        elif color[0] == PURPLE[0] and color[1] == PURPLE[1] and color[2] == PURPLE[2]:
             xTarget,yTarget = PurplePath[1]
-        elif cmp(color,GREEN) == 1:
+        elif color[0] == GREEN[0] and color[1] == GREEN[1] and color[2] == GREEN[2]:
             xTarget,yTarget = GreenPath[1]
         else:
             xTarget,yTarget = BluePath[1]
-        xRate = abs(xTarget-xLocation)/50
-        yRate = abs(yTarget-yLocation)/50
+        xRate = (xTarget-xLocation)/50
+        yRate = (yTarget-yLocation)/50
     if yLocation == 350:
-        if cmp(color,RED) == 1:
+        if color[0] == RED[0] and color[1] == RED[1] and color[2] == RED[2]:
             xTarget,yTarget = RedPath[2]
-        elif cmp(color,PURPLE) == 1:
+        elif color[0] == PURPLE[0] and color[1] == PURPLE[1] and color[2] == PURPLE[2]:
             xTarget,yTarget = PurplePath[2]
-        elif cmp(color,GREEN) == 1:
+        elif color[0] == GREEN[0] and color[1] == GREEN[1] and color[2] == GREEN[2]:
             xTarget,yTarget = GreenPath[2]
         else:
             xTarget,yTarget = BluePath[2]
-        xRate = abs(xTarget-xLocation)/50
-        yRate = abs(yTarget-yLocation)/50
-
-    #print xRate,yRate
-
+        xRate = (xTarget-xLocation)/50
+        yRate = (yTarget-yLocation)/50
+    if xTarget == 500:
+        xRate = 3
+        yRate = 0
+    elif xTarget == 0:
+        xRate = -3
+        yRate = 0
     yLocation = yLocation + yRate
     xLocation = xLocation + xRate
-
-
-
+    #if xTarget < xLocation:
+    #    xLocation = xLocation - xRate
+    #elif xTarget > xLocation:
+    #    xLocation = xLocation + xRate
 pygame.quit()
