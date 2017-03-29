@@ -10,7 +10,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 PURPLE = (175, 0, 175)
 
-#color = RED
+#Global Variable Grouping
 trigger = 0
 xLocation = 499
 yLocation = 499
@@ -24,6 +24,7 @@ mainTrashTrig = 0
 leftTrashTrig = 0
 rightTrashTrig = 0
 
+#Tuples that are used to determine the paths
 mainPath = ((250,0),(250,200))
 RightSide = ((250,200),(350,300))
 LeftSide = ((250,200),(150,300))
@@ -36,20 +37,22 @@ LeftTrash = ((350,300),(500,300))
 RightTrash = ((150,300),(0,300))
 
 #The Required Set up for the loop
+    #screen size needs to change depending of the graphics given
 size = [500, 500]
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Recycle Till I Die")
 done = False
 clock = pygame.time.Clock()
 
+#Paste text to the screen
 def texts(score):
     font = pygame.font.Font(None, 36)
     scoreText = font.render("W, A, D for trash                      Score: " + str(score),1, (0, 0, 0))
     screen.blit(scoreText, (10,10))
 
 #Loops till quit is called
-#This is where you put code
 while not done:
+    #Checks if an object has reached the boundaries and gives score
     if(yLocation > 470 or xLocation > 470 or xLocation < 30):
         if(xLocation > 60 and xLocation < 140 and color == RED):
             score = score + 10
@@ -59,11 +62,17 @@ while not done:
             score = score + 10
         elif(xLocation > 360 and xLocation < 440 and color == BLUE):
             score = score + 10
+
+        #Resets the object location to the start
         yLocation = 100
         xLocation = 250
+
+        #Establishes the starting path that every object takes
         xTarget,yTarget = mainPath[1]
         xRate = abs(xTarget-xLocation)/50
         yRate = abs(yTarget-yLocation)/50
+
+    #Associates a random color to the object
     if(yLocation == 100):
         value = random.random()
         if value < .25:
@@ -74,17 +83,24 @@ while not done:
             color = GREEN
         else:
             color = PURPLE
+
     #Limiter on loop time
     clock.tick(60)
     screen.fill(WHITE)
+
+    #This for loop handles all events: IE input from mouse and keyboard
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
+
+        #Mouse control, left it in incase it helps with the touchscreen later
         elif event.type == pygame.MOUSEBUTTONDOWN:
             (alpha, omega) = pygame.mouse.get_pos()
             if (xLocation + radius > alpha and xLocation - radius < alpha):
                 if(yLocation + radius > omega and yLocation - radius < omega):
                     trigger = 1
+
+        #Keydown and Keyup are the pressing and releasing a keyboard input
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
                 mainTrashTrig = 1
@@ -99,8 +115,8 @@ while not done:
                 leftTrashTrig = 0
             elif event.key == pygame.K_d:
                 rightTrashTrig = 0
-        #elif event.type == pygame.key.
-    #Circles to represent the targets
+
+    #These are the trashcans at the bottom of the screen, Just for visual representation
     pygame.draw.rect(screen, RED, [50, 465, 90, 50], 0)
     pygame.draw.ellipse(screen, BLACK, [50, 450, 90, 30], 0)
     pygame.draw.ellipse(screen, RED, [50, 450, 90, 30], 2)
@@ -128,17 +144,21 @@ while not done:
     pygame.draw.lines(screen, BLACK,0,RightTrash,1)
     pygame.draw.lines(screen, BLACK,0,LeftTrash,1)
 
+    #Part of the mouse input so that if you click on the ball you grab it
     if (trigger == 1):
         (xLocation, yLocation) = pygame.mouse.get_pos()
 
+    #Actual generation of the circle
     pygame.draw.circle(screen,color,(xLocation, yLocation),radius)
 
+    #Calls the function for displaying score
     texts(score)
 
     #Signal to update the screen
-    #All Drawing must be done prior to this command
+    #Try to put all pygame.draw after this
     pygame.display.flip()
 
+    #If the object get to the first splitway
     if yLocation == 200 and xTarget != 500:
         if mainTrashTrig == 1:
             xTarget,yTarget = MainTrash[1]
@@ -152,6 +172,8 @@ while not done:
             xTarget,yTarget = RightSide[1]
         xRate = (xTarget-xLocation)/50
         yRate = (yTarget-yLocation)/50
+
+    #If the object gets to the second two splitways
     if yLocation == 300 and xTarget != 500 and xTarget != 0:
         if leftTrashTrig == 1 and xLocation == 150:
             xTarget,yTarget = RightTrash[1]
@@ -167,6 +189,8 @@ while not done:
             xTarget,yTarget = BluePath[1]
         xRate = (xTarget-xLocation)/50
         yRate = (yTarget-yLocation)/50
+
+    #The last straight vertical line to each trashcan
     if yLocation == 350:
         if color[0] == RED[0] and color[1] == RED[1] and color[2] == RED[2]:
             xTarget,yTarget = RedPath[2]
@@ -178,16 +202,18 @@ while not done:
             xTarget,yTarget = BluePath[2]
         xRate = (xTarget-xLocation)/50
         yRate = (yTarget-yLocation)/50
+
+    #Establishes the rates for leaving the screen
     if xTarget == 500:
         xRate = 3
         yRate = 0
     elif xTarget == 0:
         xRate = -3
         yRate = 0
+
+    #Moves the object based along each line
     yLocation = yLocation + yRate
     xLocation = xLocation + xRate
-    #if xTarget < xLocation:
-    #    xLocation = xLocation - xRate
-    #elif xTarget > xLocation:
-    #    xLocation = xLocation + xRate
+
+#This is the end of the program, no code after this point
 pygame.quit()

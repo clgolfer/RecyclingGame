@@ -1,0 +1,21 @@
+Pick which parts you want to work on and push up to the git
+Parts that need worked on:
+
+Implementing the graphics:
+    This would involve getting all the image files and pasting them ontop of the objects that we are using to track
+Inputs:
+    For specifically testing use keyboard to activate switches, when we get touchpad update these keys to work with touchscreen.
+    This also involves moving the switches on screen
+Object Termination/Generation:
+    Being able to create the object and then track when the objects get the the final destination points.
+    Assigning points if its a proper score
+Object Movement:
+    As of how I have it set up now, objects are moving along a certain track.  There is a set number of tracks and depending on input will determine
+    which way objects should travel.  This need to modify the object movement between points as well as calculation for the specific points.
+Score/Next Object:
+    This is the secondary on screen inputs.  Score is handled for the most part but it still needs to find a home that will work.  We also need to blitz
+    the next object that is going to be generated to the screen so the users can see whats comming up next.  This needs to work with the object generation
+    so that you do that random gen side for determining what object type it will be where the attributes for that object are assigned with the generator.
+Start/Objects Left/Game Over:
+    The is the boundaries of the program.  We will need to have a simple start screen and end screen before we are giving graphics for it.  Along with this
+    there is a limit to the number of objects that can be generated.  Handle the number, blitz it to screen, and end the game and display final score.
