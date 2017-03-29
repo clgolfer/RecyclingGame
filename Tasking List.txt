@@ -9,7 +9,7 @@ Inputs:
 Object Termination/Generation:
     Being able to create the object and then track when the objects get the the final destination points.
     Assigning points if its a proper score
-Object Movement:
+Object Movement: -- Joseph
     As of how I have it set up now, objects are moving along a certain track.  There is a set number of tracks and depending on input will determine
     which way objects should travel.  This need to modify the object movement between points as well as calculation for the specific points.
 Score/Next Object:
