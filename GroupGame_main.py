@@ -1,5 +1,7 @@
 import pygame
 import random
+from GroupGame_Track import Track
+
 pygame.init()
 
 #Color Pallet
@@ -23,18 +25,33 @@ score = 0
 mainTrashTrig = 0
 leftTrashTrig = 0
 rightTrashTrig = 0
+currTrack = 0
 
 #Tuples that are used to determine the paths
-mainPath = ((250,0),(250,200))
-RightSide = ((250,200),(350,300))
-LeftSide = ((250,200),(150,300))
-RedPath = (150,300),(100,350),(100,500)
-PurplePath = (150,300),(200,350),(200,500)
-GreenPath = (350,300),(300,350),(300,500)
-BluePath = (350,300),(400,350),(400,500)
-MainTrash = ((250,200),(500,200))
-LeftTrash = ((350,300),(500,300))
-RightTrash = ((150,300),(0,300))
+mainPath = ((250,0),(250,200)) #mainPath = Track(0, (250,0), (250,200), (1,2)) #Connects right & left & main trash
+RightSide = ((250,200),(350,300)) #Connects green & blue & right trash
+LeftSide = ((250,200),(150,300)) #Connects red & purple & left trash
+RedPath = (150,300),(100,350),(100,500) #END NODE
+PurplePath = (150,300),(200,350),(200,500) #END NODE
+GreenPath = (350,300),(300,350),(300,500) #END NODE
+BluePath = (350,300),(400,350),(400,500) #END NODE
+MainTrash = ((250,200),(500,200)) #END NODE
+LeftTrash = ((350,300),(500,300)) #END NODE
+RightTrash = ((150,300),(0,300)) #END NODE
+
+'''
+#Look at me. These are the tracks now
+mainPath =      Track(0, (250,0), (250,200), (1,2,7))
+RightSide =     Track(1, (250,200),(350,300), (5,6,9)) #Connects green & blue & right trash
+LeftSide =      Track(2, (250,200),(150,300), (3,4,8)) #Connects red & purple & left trash
+RedPath =       Track(3, (150,300),(100,350), (0)) #END NODE
+PurplePath =    Track(4, (150,300),(200,350), (0)) #END NODE
+GreenPath =     Track(5, (350,300),(300,350), (0)) #END NODE
+BluePath =      Track(6, (350,300),(400,350), (0)) #END NODE
+MainTrash =     Track(7, (250,200),(500,200), (0)) #END NODE
+LeftTrash =     Track(8, (350,300),(500,300), (0)) #END NODE
+RightTrash =    Track(9, (150,300),(0,300), (0)) #END NODE
+'''
 
 #The Required Set up for the loop
     #screen size needs to change depending of the graphics given
@@ -149,7 +166,7 @@ while not done:
         (xLocation, yLocation) = pygame.mouse.get_pos()
 
     #Actual generation of the circle
-    pygame.draw.circle(screen,color,(xLocation, yLocation),radius)
+    pygame.draw.circle(screen,color,(int(xLocation), int(yLocation)),radius)
 
     #Calls the function for displaying score
     texts(score)
