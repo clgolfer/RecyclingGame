@@ -14,8 +14,7 @@ PURPLE = (175, 0, 175)
 
 #Global Variable Grouping
 trigger = 0
-xLocation = 499
-yLocation = 499
+xLocation, yLocation = (250,0)
 xTarget = 250
 yTarget = 200
 xRate = 0
@@ -26,32 +25,23 @@ mainTrashTrig = 0
 leftTrashTrig = 0
 rightTrashTrig = 0
 currTrack = 0
+color = BLACK
 
-#Tuples that are used to determine the paths
-mainPath = ((250,0),(250,200)) #mainPath = Track(0, (250,0), (250,200), (1,2)) #Connects right & left & main trash
-RightSide = ((250,200),(350,300)) #Connects green & blue & right trash
-LeftSide = ((250,200),(150,300)) #Connects red & purple & left trash
-RedPath = (150,300),(100,350),(100,500) #END NODE
-PurplePath = (150,300),(200,350),(200,500) #END NODE
-GreenPath = (350,300),(300,350),(300,500) #END NODE
-BluePath = (350,300),(400,350),(400,500) #END NODE
-MainTrash = ((250,200),(500,200)) #END NODE
-LeftTrash = ((350,300),(500,300)) #END NODE
-RightTrash = ((150,300),(0,300)) #END NODE
 
-'''
 #Look at me. These are the tracks now
 mainPath =      Track(0, (250,0), (250,200), (1,2,7))
 RightSide =     Track(1, (250,200),(350,300), (5,6,9)) #Connects green & blue & right trash
 LeftSide =      Track(2, (250,200),(150,300), (3,4,8)) #Connects red & purple & left trash
-RedPath =       Track(3, (150,300),(100,350), (0)) #END NODE
-PurplePath =    Track(4, (150,300),(200,350), (0)) #END NODE
-GreenPath =     Track(5, (350,300),(300,350), (0)) #END NODE
-BluePath =      Track(6, (350,300),(400,350), (0)) #END NODE
-MainTrash =     Track(7, (250,200),(500,200), (0)) #END NODE
-LeftTrash =     Track(8, (350,300),(500,300), (0)) #END NODE
-RightTrash =    Track(9, (150,300),(0,300), (0)) #END NODE
-'''
+RedPath =       Track(3, (150,300),(100,350), (0,0)) #END NODE
+PurplePath =    Track(4, (150,300),(200,350), (0,0)) #END NODE
+GreenPath =     Track(5, (350,300),(300,350), (0,0)) #END NODE
+BluePath =      Track(6, (350,300),(400,350), (0,0)) #END NODE
+MainTrash =     Track(7, (250,200),(500,200), (0,0)) #END NODE
+LeftTrash =     Track(8, (350,300),(500,300), (0,0)) #END NODE
+RightTrash =    Track(9, (150,300),(0,300), (0,0)) #END NODE
+
+tracks = (mainPath, RightSide, LeftSide, RedPath, PurplePath, GreenPath, BluePath, MainTrash, LeftTrash, RightTrash)
+
 
 #The Required Set up for the loop
     #screen size needs to change depending of the graphics given
@@ -68,38 +58,65 @@ def texts(score):
     screen.blit(scoreText, (10,10))
 
 #Loops till quit is called
+
+# Associates a random color to the object
+value = random.random()
+if value < .25:
+    color = RED
+elif value < .5:
+    color = BLUE
+elif value < .75:
+    color = GREEN
+else:
+    color = PURPLE
+
 while not done:
     #Checks if an object has reached the boundaries and gives score
-    if(yLocation > 470 or xLocation > 470 or xLocation < 30):
-        if(xLocation > 60 and xLocation < 140 and color == RED):
-            score = score + 10
-        elif(xLocation > 160 and xLocation < 240 and color == PURPLE):
-            score = score + 10
-        elif(xLocation > 260 and xLocation < 340 and color == GREEN):
-            score = score + 10
-        elif(xLocation > 360 and xLocation < 440 and color == BLUE):
-            score = score + 10
+    track = tracks[currTrack].object_is_at_end((xLocation,yLocation))
+    if(track != -1): #We have reached the end of a certain track
+        if(track == 0): #Said track we have reached the end of is an end node
+            if currTrack == 3: #If it's red
+                if color == RED: #You did good
+                    score = score + 10
+                else: #You didn't
+                    score = score - 10
+            elif currTrack == 4: #Purple!
+                if color == PURPLE:
+                    score = score + 10
+                else:
+                    score = score - 10
+            elif currTrack == 5: #Green!
+                if color == GREEN:
+                    score = score + 10
+                else:
+                    score = score - 10
+            elif currTrack == 6: #Blue!
+                if color == BLUE:
+                    score = score + 10
+                else:
+                    score = score - 10
+            elif currTrack == 7: #Main trash!
+                score = score - 10
+            elif currTrack == 8: #Left trash
+                score = score - 10
+            elif currTrack == 9: #Aaaaand right trash
+                score = score - 10
+            xLocation, yLocation = tracks[0].beginningPoint
 
-        #Resets the object location to the start
-        yLocation = 100
-        xLocation = 250
+            # Associates a random color to the object
+            value = random.random()
+            if value < .25:
+                color = RED
+            elif value < .5:
+                color = BLUE
+            elif value < .75:
+                color = GREEN
+            else:
+                color = PURPLE
+        currTrack = track
 
-        #Establishes the starting path that every object takes
-        xTarget,yTarget = mainPath[1]
-        xRate = abs(xTarget-xLocation)/50
-        yRate = abs(yTarget-yLocation)/50
-
-    #Associates a random color to the object
-    if(yLocation == 100):
-        value = random.random()
-        if value < .25:
-            color = RED
-        elif value < .5:
-            color = BLUE
-        elif value < .75:
-            color = GREEN
-        else:
-            color = PURPLE
+    #Establishes the starting path that every object takes
+    xLocation,yLocation = tracks[currTrack].advance_object((xLocation,yLocation))
 
     #Limiter on loop time
     clock.tick(60)
@@ -150,16 +167,16 @@ while not done:
     pygame.draw.ellipse(screen, BLACK, [350, 450, 90, 30], 0)
     pygame.draw.ellipse(screen, BLUE, [350, 450, 90, 30], 2)
 
-    pygame.draw.lines(screen, BLACK,0,mainPath,1)
-    pygame.draw.lines(screen, BLACK,0,RightSide,1)
-    pygame.draw.lines(screen, BLACK,0,LeftSide,1)
-    pygame.draw.lines(screen, BLACK,0,RedPath,1)
-    pygame.draw.lines(screen, BLACK,0,PurplePath,1)
-    pygame.draw.lines(screen, BLACK,0,GreenPath,1)
-    pygame.draw.lines(screen, BLACK,0,BluePath,1)
-    pygame.draw.lines(screen, BLACK,0,MainTrash,1)
-    pygame.draw.lines(screen, BLACK,0,RightTrash,1)
-    pygame.draw.lines(screen, BLACK,0,LeftTrash,1)
+    pygame.draw.lines(screen, BLACK,0,mainPath.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,RightSide.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,LeftSide.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,RedPath.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,PurplePath.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,GreenPath.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,BluePath.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,MainTrash.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,RightTrash.get_tuple(),1)
+    pygame.draw.lines(screen, BLACK,0,LeftTrash.get_tuple(),1)
 
     #Part of the mouse input so that if you click on the ball you grab it
     if (trigger == 1):
@@ -174,63 +191,6 @@ while not done:
     #Signal to update the screen
     #Try to put all pygame.draw after this
     pygame.display.flip()
-
-    #If the object get to the first splitway
-    if yLocation == 200 and xTarget != 500:
-        if mainTrashTrig == 1:
-            xTarget,yTarget = MainTrash[1]
-        elif color[0] == RED[0] and color[1] == RED[1] and color[2] == RED[2]:
-            xTarget,yTarget = LeftSide[1]
-        elif color[0] == PURPLE[0] and color[1] == PURPLE[1] and color[2] == PURPLE[2]:
-            xTarget,yTarget = LeftSide[1]
-        elif color[0] == GREEN[0] and color[1] == GREEN[1] and color[2] == GREEN[2]:
-            xTarget,yTarget = RightSide[1]
-        else:
-            xTarget,yTarget = RightSide[1]
-        xRate = (xTarget-xLocation)/50
-        yRate = (yTarget-yLocation)/50
-
-    #If the object gets to the second two splitways
-    if yLocation == 300 and xTarget != 500 and xTarget != 0:
-        if leftTrashTrig == 1 and xLocation == 150:
-            xTarget,yTarget = RightTrash[1]
-        elif rightTrashTrig == 1 and xLocation == 350:
-            xTarget,yTarget = LeftTrash[1]
-        elif color[0] == RED[0] and color[1] == RED[1] and color[2] == RED[2]:
-            xTarget,yTarget = RedPath[1]
-        elif color[0] == PURPLE[0] and color[1] == PURPLE[1] and color[2] == PURPLE[2]:
-            xTarget,yTarget = PurplePath[1]
-        elif color[0] == GREEN[0] and color[1] == GREEN[1] and color[2] == GREEN[2]:
-            xTarget,yTarget = GreenPath[1]
-        else:
-            xTarget,yTarget = BluePath[1]
-        xRate = (xTarget-xLocation)/50
-        yRate = (yTarget-yLocation)/50
-
-    #The last straight vertical line to each trashcan
-    if yLocation == 350:
-        if color[0] == RED[0] and color[1] == RED[1] and color[2] == RED[2]:
-            xTarget,yTarget = RedPath[2]
-        elif color[0] == PURPLE[0] and color[1] == PURPLE[1] and color[2] == PURPLE[2]:
-            xTarget,yTarget = PurplePath[2]
-        elif color[0] == GREEN[0] and color[1] == GREEN[1] and color[2] == GREEN[2]:
-            xTarget,yTarget = GreenPath[2]
-        else:
-            xTarget,yTarget = BluePath[2]
-        xRate = (xTarget-xLocation)/50
-        yRate = (yTarget-yLocation)/50
-
-    #Establishes the rates for leaving the screen
-    if xTarget == 500:
-        xRate = 3
-        yRate = 0
-    elif xTarget == 0:
-        xRate = -3
-        yRate = 0
-
-    #Moves the object based along each line
-    yLocation = yLocation + yRate
-    xLocation = xLocation + xRate
 
 #This is the end of the program, no code after this point
 pygame.quit()
