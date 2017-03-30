@@ -3,7 +3,7 @@ Parts that need worked on:
 
 Implementing the graphics:
     This would involve getting all the image files and pasting them ontop of the objects that we are using to track
-Inputs:
+Inputs: -- Giovani
     For specifically testing use keyboard to activate switches, when we get touchpad update these keys to work with touchscreen.
     This also involves moving the switches on screen
 Object Termination/Generation:
