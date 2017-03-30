@@ -137,11 +137,11 @@ while not done:
         #Keydown and Keyup are the pressing and releasing a keyboard input
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
-                mainTrashTrig = 1
+                tracks[0].activate_switch() #Middle
             elif event.key == pygame.K_a:
-                leftTrashTrig = 1
+                tracks[2].activate_switch() #Left
             elif event.key == pygame.K_d:
-                rightTrashTrig = 1
+                tracks[1].activate_switch() #Right
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 mainTrashTrig = 0
