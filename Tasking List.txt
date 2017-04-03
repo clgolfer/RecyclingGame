@@ -6,13 +6,13 @@ Implementing the graphics:
 Inputs: -- Giovani
     For specifically testing use keyboard to activate switches, when we get touchpad update these keys to work with touchscreen.
     This also involves moving the switches on screen
-Object Termination/Generation:
+Object Termination/Generation: -Levi
     Being able to create the object and then track when the objects get the the final destination points.
     Assigning points if its a proper score
 Object Movement: -- Joseph
     As of how I have it set up now, objects are moving along a certain track.  There is a set number of tracks and depending on input will determine
     which way objects should travel.  This need to modify the object movement between points as well as calculation for the specific points.
-Score/Next Object:
+Score/Next Object: -Levi
     This is the secondary on screen inputs.  Score is handled for the most part but it still needs to find a home that will work.  We also need to blitz
     the next object that is going to be generated to the screen so the users can see whats comming up next.  This needs to work with the object generation
     so that you do that random gen side for determining what object type it will be where the attributes for that object are assigned with the generator.
