@@ -43,6 +43,3 @@ class switch_animation(object):
         x,y = rect.width,rect.height
         self.display.blit(rotImage,(self.center[0] - x/2,self.center[1] - y/2))
         #self.display.blit(rotImage,(self.center[0],self.center[1]))
-
-
-

@@ -1,8 +1,16 @@
 import pygame
 import random
 from GroupGame_Track import Track
+from SwitchesRotation.switch_animation import switch_animation
 
 pygame.init()
+
+#The Required Set up for the loop
+    #screen size needs to change depending of the graphics given
+size = [800, 450]
+screen = pygame.display.set_mode(size)
+
+background = pygame.image.load("SwitchesRotation/game.jpg")
 
 #Color Pallet
 BLACK = (0, 0, 0)
@@ -13,40 +21,40 @@ RED = (255, 0, 0)
 PURPLE = (175, 0, 175)
 
 #Global Variable Grouping
-trigger = 0
-xLocation, yLocation = (250,0)
-xTarget = 250
-yTarget = 200
-xRate = 0
-yRate = 0
 radius = 20
 score = 0
-mainTrashTrig = 0
-leftTrashTrig = 0
-rightTrashTrig = 0
 currTrack = 0
 color = BLACK
 
-
 #Look at me. These are the tracks now
-mainPath =      Track(0, (250,0), (250,200), (1,2,7))
-RightSide =     Track(1, (250,200),(350,300), (5,6,9)) #Connects green & blue & right trash
-LeftSide =      Track(2, (250,200),(150,300), (3,4,8)) #Connects red & purple & left trash
-RedPath =       Track(3, (150,300),(100,350), (0,0)) #END NODE
-PurplePath =    Track(4, (150,300),(200,350), (0,0)) #END NODE
-GreenPath =     Track(5, (350,300),(300,350), (0,0)) #END NODE
-BluePath =      Track(6, (350,300),(400,350), (0,0)) #END NODE
-MainTrash =     Track(7, (250,200),(500,200), (0,0)) #END NODE
-LeftTrash =     Track(8, (350,300),(500,300), (0,0)) #END NODE
-RightTrash =    Track(9, (150,300),(0,300), (0,0)) #END NODE
+mainPath0 =      Track(0, (361,30), (371,177), (1,1))
+mainPathSplit0 =    Track(1, (371,177), (428,208), (5,2))
+derivPath10 =       Track(2, (429,208),(429,262), (3,3))
+derivPath11 =       Track(3, (249,208), (368,304), (4,4))
+derivPath1End =     Track(4, (368,304),(367,369), (0,0)) #END NODE
+mainPathSplit1 =    Track(5, (492, 208), (524,261), (7,6))
+derivPath2End =       Track(6, (524,261), (523,374), (0,0)) #END NODE
+mainPath1 =    Track(7, (524,261), (581,283), (8,8))
+mainPathSplit2 =    Track(8, (581,283), (655,284), (10,9))
+derivPath3End = Track(9, (655,284), (657, 370), (0,0)) #END NODE
+mainPath3 =     Track(10, (655, 284), (796, 279), (0,0)) #END NODE
 
-tracks = (mainPath, RightSide, LeftSide, RedPath, PurplePath, GreenPath, BluePath, MainTrash, LeftTrash, RightTrash)
 
+mainPathSplit0.activate_switch()
+mainPathSplit1.activate_switch()
+mainPathSplit2.activate_switch()
 
-#The Required Set up for the loop
-    #screen size needs to change depending of the graphics given
-size = [500, 500]
-screen = pygame.display.set_mode(size)
+tracks = (mainPath0,mainPathSplit0,derivPath10,derivPath11,derivPath1End,mainPathSplit1,derivPath2End, mainPath1,
+          mainPathSplit2,derivPath3End,mainPath3)
+
+left_switch = switch_animation(screen,1)
+middle_switch = switch_animation(screen,2)
+right_switch = switch_animation(screen,3)
+
+switches = left_switch,middle_switch,right_switch
+
+xLocation, yLocation = tracks[0].beginningPoint
+
 pygame.display.set_caption("Recycle Till I Die")
 done = False
 clock = pygame.time.Clock()
@@ -71,6 +79,8 @@ else:
     color = PURPLE
 
 while not done:
+    screen.blit(background,(0,0))
+
     #Checks if an object has reached the boundaries and gives score
     track = tracks[currTrack].object_is_at_end((xLocation,yLocation))
     if(track != -1): #We have reached the end of a certain track
@@ -120,7 +130,6 @@ while not done:
 
     #Limiter on loop time
     clock.tick(60)
-    screen.fill(WHITE)
 
     #This for loop handles all events: IE input from mouse and keyboard
     for event in pygame.event.get():
@@ -137,18 +146,27 @@ while not done:
         #Keydown and Keyup are the pressing and releasing a keyboard input
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
-                tracks[0].activate_switch() #Middle
+                switches[0].rotSense = -switches[0].rotSense
+                tracks[1].activate_switch() #First
             elif event.key == pygame.K_a:
-                tracks[2].activate_switch() #Left
+                switches[1].rotSense = -switches[1].rotSense
+                tracks[5].activate_switch() #First
             elif event.key == pygame.K_d:
-                tracks[1].activate_switch() #Right
+                switches[2].rotSense = -switches[2].rotSense
+                tracks[8].activate_switch() #Third
+                '''
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
-                mainTrashTrig = 0
+                x = 1
+                #switches[0].rotSense = -1
+                #tracks[1].activate_switch() #First
             elif event.key == pygame.K_a:
-                leftTrashTrig = 0
+                switches[1].rotSense = -1
+                tracks[5].activate_switch() #Second
             elif event.key == pygame.K_d:
-                rightTrashTrig = 0
+                switches[2].rotSense = -1
+                tracks[8].activate_switch() #Third
+                '''
 
     #These are the trashcans at the bottom of the screen, Just for visual representation
     pygame.draw.rect(screen, RED, [50, 465, 90, 50], 0)
@@ -167,6 +185,7 @@ while not done:
     pygame.draw.ellipse(screen, BLACK, [350, 450, 90, 30], 0)
     pygame.draw.ellipse(screen, BLUE, [350, 450, 90, 30], 2)
 
+    '''
     pygame.draw.lines(screen, BLACK,0,mainPath.get_tuple(),1)
     pygame.draw.lines(screen, BLACK,0,RightSide.get_tuple(),1)
     pygame.draw.lines(screen, BLACK,0,LeftSide.get_tuple(),1)
@@ -177,16 +196,15 @@ while not done:
     pygame.draw.lines(screen, BLACK,0,MainTrash.get_tuple(),1)
     pygame.draw.lines(screen, BLACK,0,RightTrash.get_tuple(),1)
     pygame.draw.lines(screen, BLACK,0,LeftTrash.get_tuple(),1)
-
-    #Part of the mouse input so that if you click on the ball you grab it
-    if (trigger == 1):
-        (xLocation, yLocation) = pygame.mouse.get_pos()
-
+    '''
     #Actual generation of the circle
     pygame.draw.circle(screen,color,(int(xLocation), int(yLocation)),radius)
 
     #Calls the function for displaying score
     texts(score)
+
+    for sw in switches:
+        sw.update()
 
     #Signal to update the screen
     #Try to put all pygame.draw after this
