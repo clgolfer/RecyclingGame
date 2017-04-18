@@ -10,7 +10,12 @@ pygame.init()
 size = [800, 450]
 screen = pygame.display.set_mode(size)
 
+#Various images used
 background = pygame.image.load("SwitchesRotation/game.jpg")
+bottle = pygame.image.load("bottle.png")
+glassBottle = pygame.image.load("glass bottle.png")
+paper = pygame.image.load("paper.png")
+trashcan = pygame.image.load("trashcan.png")
 
 #Color Pallet
 BLACK = (0, 0, 0)
@@ -25,6 +30,13 @@ radius = 20
 score = 0
 currTrack = 0
 color = BLACK
+nextColor = WHITE
+
+#scale the recyclables to the correct size
+bottle = pygame.transform.smoothscale(bottle, (radius, 2*radius))
+glassBottle = pygame.transform.smoothscale(glassBottle, (radius, 2*radius))
+paper = pygame.transform.smoothscale(paper, (2*radius, 2*radius))
+trashcan = pygame.transform.smoothscale(trashcan, (2*radius, 2*radius))
 
 #Look at me. These are the tracks now
 mainPath0 =      Track(0, (361,30), (371,177), (1,1))
@@ -47,6 +59,25 @@ mainPathSplit2.activate_switch()
 tracks = (mainPath0,mainPathSplit0,derivPath10,derivPath11,derivPath1End,mainPathSplit1,derivPath2End, mainPath1,
           mainPathSplit2,derivPath3End,mainPath3)
 
+"""
+Track layout based on the above.
+ |
+ |
+0|
+  \1
+   \
+    \
+   2|\5
+    | \
+    /  \
+  3/   |\7
+  |    | \
+  |    |  \____ ___10 trash
+  |    |   8   |
+ 4|   6|      9|
+bot gbot  paper
+"""
+
 left_switch = switch_animation(screen,1)
 middle_switch = switch_animation(screen,2)
 right_switch = switch_animation(screen,3)
@@ -61,9 +92,11 @@ clock = pygame.time.Clock()
 
 #Paste text to the screen
 def texts(score):
-    font = pygame.font.Font(None, 36)
-    scoreText = font.render("W, A, D for trash                      Score: " + str(score),1, (0, 0, 0))
-    screen.blit(scoreText, (10,10))
+    font = pygame.font.Font("DIN Condensed.ttf", 36)
+    scoreText = font.render(str(score),1, (0,0,0))
+    directionsText = font.render("W, A, D for trash",1, (0, 0, 0))
+    screen.blit(scoreText, (103,100))
+    screen.blit(directionsText, (550, 100))
 
 #Loops till quit is called
 
@@ -77,6 +110,16 @@ elif value < .75:
     color = GREEN
 else:
     color = PURPLE
+# Associates a random color to the next object
+value = random.random()
+if value < .25:
+    nextColor = RED
+elif value < .5:
+    nextColor = BLUE
+elif value < .75:
+    nextColor = GREEN
+else:
+    nextColor = PURPLE
 
 while not done:
     screen.blit(background,(0,0))
@@ -85,44 +128,42 @@ while not done:
     track = tracks[currTrack].object_is_at_end((xLocation,yLocation))
     if(track != -1): #We have reached the end of a certain track
         if(track == 0): #Said track we have reached the end of is an end node
-            if currTrack == 3: #If it's red
-                if color == RED: #You did good
+            if currTrack == 4: #Purple! Bottle!
+                if color == PURPLE: #You did good
                     score = score + 10
                 else: #You didn't
                     score = score - 10
-            elif currTrack == 4: #Purple!
-                if color == PURPLE:
-                    score = score + 10
-                else:
-                    score = score - 10
-            elif currTrack == 5: #Green!
-                if color == GREEN:
-                    score = score + 10
-                else:
-                    score = score - 10
-            elif currTrack == 6: #Blue!
+                color = nextColor #update to the next thing
+            elif currTrack == 6: #Blue! Glass bottle!
                 if color == BLUE:
                     score = score + 10
                 else:
                     score = score - 10
-            elif currTrack == 7: #Main trash!
-                score = score - 10
-            elif currTrack == 8: #Left trash
-                score = score - 10
-            elif currTrack == 9: #Aaaaand right trash
-                score = score - 10
+                color = nextColor #update to the next thing
+            elif currTrack == 9: #Green! Paper!
+                if color == GREEN:
+                    score = score + 10
+                else:
+                    score = score - 10
+                color = nextColor #update to the next thing
+            elif currTrack == 10: #If it's red. Trash!
+                if color == RED: 
+                    score = score + 10
+                else: 
+                    score = score - 10
+                color = nextColor #update to the next thing
             xLocation, yLocation = tracks[0].beginningPoint
 
-            # Associates a random color to the object
+            # Associates a random color to the next object
             value = random.random()
             if value < .25:
-                color = RED
+                nextColor = RED
             elif value < .5:
-                color = BLUE
+                nextColor = BLUE
             elif value < .75:
-                color = GREEN
+                nextColor = GREEN
             else:
-                color = PURPLE
+                nextColor = PURPLE
         currTrack = track
 
     #Establishes the starting path that every object takes
@@ -150,7 +191,7 @@ while not done:
                 tracks[1].activate_switch() #First
             elif event.key == pygame.K_a:
                 switches[1].rotSense = -switches[1].rotSense
-                tracks[5].activate_switch() #First
+                tracks[5].activate_switch() #Second
             elif event.key == pygame.K_d:
                 switches[2].rotSense = -switches[2].rotSense
                 tracks[8].activate_switch() #Third
@@ -197,9 +238,27 @@ while not done:
     pygame.draw.lines(screen, BLACK,0,RightTrash.get_tuple(),1)
     pygame.draw.lines(screen, BLACK,0,LeftTrash.get_tuple(),1)
     '''
-    #Actual generation of the circle
-    pygame.draw.circle(screen,color,(int(xLocation), int(yLocation)),radius)
+    
+    #blit the recyclable to the screen
+    if color == RED:
+        screen.blit(trashcan, (int(xLocation)-radius, int(yLocation)-radius))
+    elif color == PURPLE:
+        screen.blit(bottle, (int(xLocation)-radius/2, int(yLocation)-radius))
+    elif color == GREEN:
+        screen.blit(paper, (int(xLocation)-radius, int(yLocation)-radius))
+    elif color == BLUE:
+        screen.blit(glassBottle, (int(xLocation)-radius/2, int(yLocation)-radius))
 
+    #blit the next recyclable in the "Coming up" spot
+    if nextColor == RED:
+        screen.blit(trashcan, (77, 268))
+    elif nextColor == PURPLE:
+        screen.blit(bottle, (85,268))
+    elif nextColor == GREEN:
+        screen.blit(paper, (77,268))
+    elif nextColor == BLUE:
+        screen.blit(glassBottle, (85,268))
+        
     #Calls the function for displaying score
     texts(score)
 
