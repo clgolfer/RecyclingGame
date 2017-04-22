@@ -165,6 +165,7 @@ while not done:
             else:
                 nextColor = PURPLE
         currTrack = track
+        pygame.mouse.set_visible(False)
 
     #Establishes the starting path that every object takes
     xLocation,yLocation = tracks[currTrack].advance_object((xLocation,yLocation))
