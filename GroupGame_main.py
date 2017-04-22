@@ -94,7 +94,7 @@ clock = pygame.time.Clock()
 def texts(score):
     font = pygame.font.Font("DIN Condensed.ttf", 36)
     scoreText = font.render(str(score),1, (0,0,0))
-    directionsText = font.render("W, A, D for trash",1, (0, 0, 0))
+    directionsText = font.render("Tap Switch to Recycle",1, (0, 0, 0))
     screen.blit(scoreText, (103,100))
     screen.blit(directionsText, (550, 100))
 
@@ -180,22 +180,38 @@ while not done:
         #Mouse control, left it in incase it helps with the touchscreen later
         elif event.type == pygame.MOUSEBUTTONDOWN:
             (alpha, omega) = pygame.mouse.get_pos()
-            if (xLocation + radius > alpha and xLocation - radius < alpha):
-                if(yLocation + radius > omega and yLocation - radius < omega):
+            if 373 > omega and 340 < omega:
+                if 439 > alpha and 409 < alpha:
                     trigger = 1
+                    switches[0].rotSense = -switches[0].rotSense
+                    tracks[1].activate_switch()  # First
+                elif 597 > alpha and 563 < alpha:
+                    trigger = 1
+                    switches[1].rotSense = -switches[1].rotSense
+                    tracks[5].activate_switch() #Second
+                elif 731 > alpha and 700 < alpha:
+                    trigger = 1
+                    switches[2].rotSense = -switches[2].rotSense
+                    tracks[8].activate_switch()  # Third
 
+        elif event.type == pygame.MOUSEBUTTONUP:
+            trigger = 0
+
+        '''
         #Keydown and Keyup are the pressing and releasing a keyboard input
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
-                switches[0].rotSense = -switches[0].rotSense
-                tracks[1].activate_switch() #First
-            elif event.key == pygame.K_a:
-                switches[1].rotSense = -switches[1].rotSense
-                tracks[5].activate_switch() #Second
-            elif event.key == pygame.K_d:
-                switches[2].rotSense = -switches[2].rotSense
-                tracks[8].activate_switch() #Third
-                '''
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            xy = pygame.mouse.get_pos();
+            if xy[1] > 340 or xy[1] < 373:
+                if xy[0]>409 or xy[0]<439:
+                    switches[0].rotSense = -switches[0].rotSense
+                    tracks[1].activate_switch() #First
+                elif xy[0]>563 or xy[0]<597:
+                    switches[1].rotSense = -switches[1].rotSense
+                    tracks[5].activate_switch() #Second
+                elif xy[0]>700 or xy[0]<731:
+                    switches[2].rotSense = -switches[2].rotSense
+                    tracks[8].activate_switch() #Third
+
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 x = 1
