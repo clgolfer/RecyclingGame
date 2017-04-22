@@ -123,7 +123,7 @@ else:
 
 while not done:
     screen.blit(background,(0,0))
-
+    pygame.mouse.set_visible(False)
     #Checks if an object has reached the boundaries and gives score
     track = tracks[currTrack].object_is_at_end((xLocation,yLocation))
     if(track != -1): #We have reached the end of a certain track
@@ -165,7 +165,6 @@ while not done:
             else:
                 nextColor = PURPLE
         currTrack = track
-        pygame.mouse.set_visible(False)
 
     #Establishes the starting path that every object takes
     xLocation,yLocation = tracks[currTrack].advance_object((xLocation,yLocation))
