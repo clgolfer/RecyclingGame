@@ -10,6 +10,30 @@ pygame.init()
 size = [800, 450]
 screen = pygame.display.set_mode(size)
 
+#Class for creating menu items
+class Option:
+    hovered = False
+    def __init__(self, text, pos):
+        self.text = text
+        self.pos = pos
+        self.set_rect()
+        self.draw()
+    def draw(self):
+        self.set_rend()
+        screen.blit(self.rend, self.rect)
+    def set_rend(self):
+        self.rend = menu_font.render(self.text, True, self.get_color())
+    def get_color(self):
+        if self.hovered:
+            return (255, 255, 255)
+        else:
+            return (100, 100, 100)
+    def set_rect(self):
+        self.set_rend()
+        self.rect = self.rend.get_rect()
+        self.rect.topleft = self.pos
+
+
 #Various images used
 background = pygame.image.load("SwitchesRotation/game.jpg")
 bottle = pygame.image.load("bottle.png")
@@ -31,6 +55,7 @@ score = 0
 currTrack = 0
 color = BLACK
 nextColor = WHITE
+#highscore
 
 #scale the recyclables to the correct size
 bottle = pygame.transform.smoothscale(bottle, (radius, 2*radius))
@@ -121,9 +146,48 @@ elif value < .75:
 else:
     nextColor = PURPLE
 
+init = 0
+menu_font = pygame.font.Font(None, 40)
+#cant use this to make multiple clickable buttons, bug'd out.  Need to find a fix in the class design.
+options = [Option("NEW GAME", (140, 105))]#,Option("QUIT", (140, 155))]
+clicked = 0
+screen.fill((0, 0, 0))
+
+while init == 0:
+    pygame.mouse.set_visible(False)
+    screen.fill((0, 0, 0))
+    myfont = pygame.font.SysFont(None, 40)
+    label = myfont.render("DOWN THE CHUTE!", 1, (255,255,255))
+    screen.blit(label, (360, 105))
+    label = myfont.render("Created by:", 1, (255,255,255))
+    screen.blit(label, (360, 155))
+    label = myfont.render("Joeseph Lawson, Allie Elliott", 1, (255,255,255))
+    screen.blit(label, (360, 185))
+    label = myfont.render("Giovani Rodrigiez, Jason Ogaz", 1, (255,255,255))
+    screen.blit(label, (360, 215))
+    label = myfont.render("Raymond Isner, Curtis Landis", 1, (255,255,255))
+    screen.blit(label, (360, 245))
+    label = myfont.render("Levi St. Thomas", 1, (255,255,255))
+    screen.blit(label, (360, 275))
+    #This for loop handles all events: IE input from mouse and keyboard
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+        elif event.type == pygame.MOUSEBUTTONDOWN and option.hovered == True:
+            init = 1
+        for option in options:
+            if option.rect.collidepoint(pygame.mouse.get_pos()):
+                option.hovered = True
+            else:
+                option.hovered = False
+            option.draw()
+        pygame.display.update()
+
+#All code after the menu is being put into its own segemented area.
 while not done:
     screen.blit(background,(0,0))
     pygame.mouse.set_visible(False)
+
     #Checks if an object has reached the boundaries and gives score
     track = tracks[currTrack].object_is_at_end((xLocation,yLocation))
     if(track != -1): #We have reached the end of a certain track
@@ -147,9 +211,9 @@ while not done:
                     score = score - 10
                 color = nextColor #update to the next thing
             elif currTrack == 10: #If it's red. Trash!
-                if color == RED: 
+                if color == RED:
                     score = score + 10
-                else: 
+                else:
                     score = score - 10
                 color = nextColor #update to the next thing
             xLocation, yLocation = tracks[0].beginningPoint
@@ -176,7 +240,6 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-
         #Mouse control, left it in incase it helps with the touchscreen later
         elif event.type == pygame.MOUSEBUTTONDOWN:
             (alpha, omega) = pygame.mouse.get_pos()
@@ -197,64 +260,6 @@ while not done:
         elif event.type == pygame.MOUSEBUTTONUP:
             trigger = 0
 
-        '''
-        #Keydown and Keyup are the pressing and releasing a keyboard input
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            xy = pygame.mouse.get_pos();
-            if xy[1] > 340 or xy[1] < 373:
-                if xy[0]>409 or xy[0]<439:
-                    switches[0].rotSense = -switches[0].rotSense
-                    tracks[1].activate_switch() #First
-                elif xy[0]>563 or xy[0]<597:
-                    switches[1].rotSense = -switches[1].rotSense
-                    tracks[5].activate_switch() #Second
-                elif xy[0]>700 or xy[0]<731:
-                    switches[2].rotSense = -switches[2].rotSense
-                    tracks[8].activate_switch() #Third
-
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_w:
-                x = 1
-                #switches[0].rotSense = -1
-                #tracks[1].activate_switch() #First
-            elif event.key == pygame.K_a:
-                switches[1].rotSense = -1
-                tracks[5].activate_switch() #Second
-            elif event.key == pygame.K_d:
-                switches[2].rotSense = -1
-                tracks[8].activate_switch() #Third
-                '''
-
-    #These are the trashcans at the bottom of the screen, Just for visual representation
-    pygame.draw.rect(screen, RED, [50, 465, 90, 50], 0)
-    pygame.draw.ellipse(screen, BLACK, [50, 450, 90, 30], 0)
-    pygame.draw.ellipse(screen, RED, [50, 450, 90, 30], 2)
-
-    pygame.draw.rect(screen, PURPLE, [150, 465, 90, 50], 0)
-    pygame.draw.ellipse(screen, BLACK, [150, 450, 90, 30], 0)
-    pygame.draw.ellipse(screen, PURPLE, [150, 450, 90, 30], 2)
-
-    pygame.draw.rect(screen, GREEN, [250, 465, 90, 50], 0)
-    pygame.draw.ellipse(screen, BLACK, [250, 450, 90, 30], 0)
-    pygame.draw.ellipse(screen, GREEN, [250, 450, 90, 30], 2)
-
-    pygame.draw.rect(screen, BLUE, [350, 465, 90, 50], 0)
-    pygame.draw.ellipse(screen, BLACK, [350, 450, 90, 30], 0)
-    pygame.draw.ellipse(screen, BLUE, [350, 450, 90, 30], 2)
-
-    '''
-    pygame.draw.lines(screen, BLACK,0,mainPath.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,RightSide.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,LeftSide.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,RedPath.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,PurplePath.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,GreenPath.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,BluePath.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,MainTrash.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,RightTrash.get_tuple(),1)
-    pygame.draw.lines(screen, BLACK,0,LeftTrash.get_tuple(),1)
-    '''
-    
     #blit the recyclable to the screen
     if color == RED:
         screen.blit(trashcan, (int(xLocation)-radius, int(yLocation)-radius))
@@ -274,7 +279,7 @@ while not done:
         screen.blit(paper, (77,268))
     elif nextColor == BLUE:
         screen.blit(glassBottle, (85,268))
-        
+
     #Calls the function for displaying score
     texts(score)
 
